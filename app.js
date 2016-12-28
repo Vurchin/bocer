@@ -14,13 +14,14 @@ var config = {
   "PASS"    : "",
   "HOST"    : "localhost", 
   "PORT"    : "27017", 
-  "DATABASE" : "bocerapp"
+  "DATABASE" : "bocer"
 }
-var dbpath = "mongodb://"+config.USER + ":"+
-            config.PASS + "@"+
-            config.HOST + ":"+
-            config.PORT + "/"+
-            config.DATABASE;
+var dbpath = "mongodb://"
+              + config.HOST
+              + ":"
+              + config.PORT
+              + "/"
+              + config.DATABASE;
 
 var db = mongoose.connect(dbpath);
 
@@ -31,6 +32,9 @@ var profile = require('./routes/profile');
 var book = require('./routes/book');
 
 var app = express();
+
+//set port num
+app.set('port',process.env.PORT || 3000);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -83,6 +87,10 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+//server starts listen
+app.listen();
+console.log('server running');
 
 
 module.exports = app;

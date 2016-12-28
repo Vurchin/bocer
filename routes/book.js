@@ -6,7 +6,7 @@ var User = require('../dataModel/userModel');
 /* GET home page. */
 router.post('/addbook', function(req, res) {
   	var image = [req.body.image1,req.body.image2,req.body.image3];
-  	var loc = [req.body.locationX,req.body.locationY];
+  	var loc = req.body.loc;
 
   	var out = {
 			'Target Action':'addbookresult',
