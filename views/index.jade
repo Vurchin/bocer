@@ -1,0 +1,18 @@
+extends layout
+
+block othercss
+	link(rel='stylesheet', href='/stylesheets/index.css')
+
+block content
+	.site-wrapper
+		.site-wrapper-inner
+			.cover-container
+				.masthead.clearfix
+					.inner
+						h3.masthead-brand #{title}
+						nav
+							ul.nav.masthead-nav
+								li.active #[a(href='#') Home]
+			.inner.cover
+				h1.cover-heading Next Big Thing
+				p.lead Coming Soon....

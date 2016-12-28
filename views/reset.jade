@@ -1,0 +1,40 @@
+extends layout
+
+block othercss
+  link(rel='stylesheet', href='/stylesheets/reset.css')
+  script(type='text/javascript').
+    function checkPwd(){
+      var pwd = $('#pwd').val();
+      var confirm = $('#confirm').val();
+      if(pwd===confirm){
+        return true;
+      }else{
+        $('.form-group').last().prepend("<div class=\"alert alert-danger\" role=\"alert\">Password not match</div>")
+        return false;
+      }
+    }
+block content
+  if(result=='found')
+    .container
+      form.form-signin(method='POST',onsubmit='return checkPwd();')
+        legend Reset Password
+        .form-group
+          label(for='password') New Password
+          input.form-control#pwd(type='password', name='password', value='', placeholder='New password', autofocus=true)
+        .form-group
+          label(for='confirm') Confirm Password
+          input.form-control#confirm(type='password', name='confirm', value='', placeholder='Confirm password')
+        .form-group
+          button.btn.btn-primary#submit(type='submit') Update Password
+  if(result=='error')
+    .container
+      h2 Sorry!
+      p Your request has expired, please request again. 
+  if(result=='fail')
+    .container  
+      h2 Sorry!
+      p System Error, please try it later!
+  if(result=='success')
+    .container
+      h2 Success!
+      p You have successfully changed your password. Please use new password to log in.

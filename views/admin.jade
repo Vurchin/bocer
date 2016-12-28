@@ -1,0 +1,14 @@
+extends layout
+
+block othercss
+	link(rel='stylesheet', href='/stylesheets/admin.css')
+
+block content
+	.container
+		form.form-signin(action='/admin',method='POST')
+			h2.form-signin-heading Admin
+			label(for="inputEmail" class="sr-only") Admin Account
+			input(id="inputEmail" class="form-control" placeholder="Admin account" name='user' required autofocus)
+			label(for="inputPassword" class="sr-only") Password
+			input(type="password" id="inputPassword" class="form-control" placeholder="Password" name='password' required)
+			button.btn.btn-lg.btn-primary.btn-block(type="submit" id='signin') Sign in
