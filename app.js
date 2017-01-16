@@ -90,7 +90,7 @@ app.use(function(err, req, res, next) {
 
 //server starts listen
 app.listen();
-console.log('server running');
+console.log('server running at ' + app.get('port'));
 
 
 module.exports = app;
