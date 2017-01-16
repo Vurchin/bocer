@@ -9,14 +9,16 @@ crypto.DEFAULT_ENCODING = 'binary';
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'bocerapp@gmail.com',
-        pass: 'ajosojhzjfuvaihh'
+        user: 'bocer@bocerbook.com',
+        pass: '1Qaz2wsx'
     }
 });
 
 router.post('/addUser', function(req, res){
 	var username = req.body.username;
 	var password = req.body.password;
+	/////
+	var school = req.body.school;
 	var firstName = req.body.firstName;
 	var lastName = req.body.lastName;
 	var currentTime = new Date();
@@ -112,7 +114,7 @@ router.post('/forgetPassword', function(req,res){
 			out.content = 'not exist';
 			res.send(out);
 		}else{
-			var token = crypto.randomBytes(20).toString('hex');
+			var token = crypto.randomBytes(6).toString('hex');
 			var tomorrow = new Date();
 			tomorrow.setDate(tomorrow.getDate()+1);
 
@@ -123,13 +125,10 @@ router.post('/forgetPassword', function(req,res){
 				if(err) {out.content='fail';res.send(out);}
 				else{
 					transporter.sendMail({
-						from: 'bocerapp@bocerapp.com',
+						from: 'bocer@bocerbook.com',
 	    				to: user.username,
-	    				subject: 'Reset Password for Bocer APP',
-	    				text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-	          	'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-	          	'http://' + req.headers.host + '/reset/' + token + '\n\n' +
-	          	'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+	    				subject: 'Reset Password for Bocer',
+	    				text: 'Your verification code is ' + token + '. This code will expire in 24 hours.'
 						}, function(err,info){
 						if(err) out.content='fail';
 						else{
@@ -142,6 +141,7 @@ router.post('/forgetPassword', function(req,res){
 		}
 	})
 });
+//in case if there will be a website
 router.get('/reset/:token',function(req,res){
 	var token = req.params.token;
 	var now = new Date();
@@ -154,12 +154,21 @@ router.get('/reset/:token',function(req,res){
 		}
 	});
 });
-router.post('/reset/:token',function(req,res){
-	var token = req.params.token;
-	User.findOne({resetPwdToken:token, resetPwdExpire:{$gt:Date.now()}},function(err,user){
-		if(err){res.render('reset', {result:'fail'});}
+router.post('/reset',function(req,res){
+	var token = req.body.token;
+	var username = req.body.username;
+	var out = {
+		'Target Action':'reset',
+		'content':''
+	}
+	User.findOne({username:username, resetPwdToken:token, resetPwdExpire:{$gt:Date.now()}},function(err,user){
+		if(err){
+			out.content = 'fail';
+			res.send(out);
+		}
 		else if(!user){
-			res.render('reset',{result:'error'});
+			out.content = 'error';
+			res.send(out);
 		}else{
 			var password = req.body.password;
 			user.password = crypto.createHash('md5').update(password).digest('hex');
@@ -167,9 +176,11 @@ router.post('/reset/:token',function(req,res){
 			user.resetPwdExpire = undefined;
 			user.save(function(err){
 				if(err){
-					res.render('reset',{result:'fail'});
+					out.content = 'fail';
+					res.send(out);
 				}else{
-					res.render('reset',{result:'success'});
+					out.content = 'success';
+					res.send(out);
 				}
 			});
 		}

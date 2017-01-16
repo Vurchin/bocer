@@ -12,6 +12,7 @@ var bookSchema = new Schema({
 	image:[String],
 	className:{type:String},
 	price:{type:Number, require:true},
+	real_price:{type:Number, require:true},
 	loc:{type:String, require:true},
 	state:{type:Number, default:0},
 	createDate: Date,

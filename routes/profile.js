@@ -11,23 +11,18 @@ router.post('/userbasicinfo', function(req,res){
 		'content':'',
 		'firstname':'',
 		'lastname':'',
+		'school':'',
 		'imagestring':''
 	};
 	Profile.findOne({username:username},function(err,doc){
 		if(err) out.content = 'fail';
-		if(doc){
-			out.content = 'success';
-			out.firstname = doc.firstName;
-			out.lastname = doc.lastName;
-			if(doc.image) out.imagestring = doc.image;
-			else out.imagestring = '';
-		}else{
-			out.content = 'fail';
+		else{
+			out.content = doc;
+			res.send(out);
 		}
-		res.send(out);
 	});
 });
-
+//just in case
 router.post('/addusersmallimage', function(req,res){
 	var username = req.body.username;
 	var image = req.body.imagestring;
@@ -46,12 +41,13 @@ router.post('/setuserinfo',function(req,res){
 	var username = req.body.username;
 	var firstName = req.body.firstname;
 	var lastName = req.body.lastname;
+	var school = req.body.school;
 	var image = req.body.imagestring;
 	var out = {
 		'Target Action':'setuserinfo',
 		'content':''
 	};
-	Profile.update({username:username},{$set:{image:image,firstName:firstName, lastName:lastName}}, function(err){
+	Profile.update({username:username},{$set:{school:school,image:image,firstName:firstName, lastName:lastName}}, function(err){
 		if (err) out.content = 'fail';
 		else out.content = 'success';
 		res.send(out);

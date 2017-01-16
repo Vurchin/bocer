@@ -9,6 +9,7 @@ var profileSchema = new Schema({
 	firstName:{type:String, require:true},
 	lastName:{type:String, require:true},
 	image:{type:String},
+	school:{type:String}, //only one school name
 	createDate: Date,
 	is_deleted: Boolean},
 	{

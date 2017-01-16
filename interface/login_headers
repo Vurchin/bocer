@@ -1,0 +1,62 @@
+//addUser
+
+content:
+
+username
+password
+firstname
+lastname
+school
+
+out:
+signupresult
+fail/sucess/exist
+
+
+//login  /////////device id
+
+content:
+
+username
+password
+device id
+
+
+out:
+loginresult
+fail/success
+
+
+//checkfacebook
+
+content:
+username
+
+out:
+fail/exist/not exist
+
+
+
+//forgetpassword
+
+content:
+
+email addr
+
+
+out:
+
+fail/not exist/success
+
+/reset
+
+content:
+
+email addr
+token
+
+
+
+out:
+
+success/fail

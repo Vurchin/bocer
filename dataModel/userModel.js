@@ -10,6 +10,8 @@ var userSchema = new Schema({
 	password:{type:String, require:true},
 	salt:{type:String, require:true},
 	createDate: Date,
+	device_id:String,
+	is_online:Boolean,
 	resetPwdToken:String,
 	resetPwdExpire:Date},
 	{
@@ -31,6 +33,8 @@ userSchema.pre('save',function(next){
 
 	this.salt = salt;
 	this.password = hashed;
+
+	this.is_online = false;
 
 	next();
 });

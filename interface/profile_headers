@@ -1,0 +1,27 @@
+
+
+//userbasicinfo
+
+content:
+
+username
+
+out:
+
+fail/json file
+
+
+
+//setuserinfo
+
+content:
+
+username
+first
+last
+school
+image
+
+out:
+
+fail/success
