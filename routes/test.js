@@ -1,8 +1,15 @@
-var bookdb = require('google-books-search');
+var express = require('express');
+var app = express();
+
+app.set('port',process.env.PORT || 3000);
 
 
-
-
-bookdb.search('9788126519705',function(err,results){
-    console.log(results);
+app.post('/get',function(req,res){
+    console.log("heyhey");
 });
+
+
+
+app.listen(function(err){
+    if(!err) console.log('wdhwd');
+})

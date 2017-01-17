@@ -8,11 +8,7 @@ router.post('/userbasicinfo', function(req,res){
 	var username = req.body.username;
 	var out ={
 		'Target Action':'userbasicinfo',
-		'content':'',
-		'firstname':'',
-		'lastname':'',
-		'school':'',
-		'imagestring':''
+		'content':''
 	};
 	Profile.findOne({username:username},function(err,doc){
 		if(err) out.content = 'fail';

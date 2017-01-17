@@ -30,15 +30,11 @@ var admin = require('./routes/admin');
 var login = require('./routes/login');
 var profile = require('./routes/profile');
 var book = require('./routes/book');
+var listing = require('./routes/listing');
+var school = require('./routes/school');
 
 var app = express();
 
-//set port num
-app.set('port',process.env.PORT || 3000);
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -54,7 +50,10 @@ app.use('/', routes);
 app.use('/', login);
 app.use('/', profile);
 app.use('/', book);
+app.use('/',listing);
+app.use('/',school);
 app.use('/admin',admin);
+
 
 
 // catch 404 and forward to error handler
@@ -89,8 +88,15 @@ app.use(function(err, req, res, next) {
 });
 
 //server starts listen
-app.listen();
-console.log('server running at ' + app.get('port'));
+app.listen((process.env.PORT || 3000),function(err){
+  if(err){
+    console.log(err);
+  }
+  else{
+    console.log('server running at ' + (process.env.PORT || 3000));
+  }
+});
+
 
 
 module.exports = app;

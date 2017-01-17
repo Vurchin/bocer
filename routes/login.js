@@ -15,9 +15,9 @@ var transporter = nodemailer.createTransport({
 });
 
 router.post('/addUser', function(req, res){
+	console.log('message got');
 	var username = req.body.username;
 	var password = req.body.password;
-	/////
 	var school = req.body.school;
 	var firstName = req.body.firstName;
 	var lastName = req.body.lastName;
@@ -35,7 +35,8 @@ router.post('/addUser', function(req, res){
 		user_id: newUser._id,
 		username:username,
 		firstName:firstName,
-		lastName:lastName
+		lastName:lastName,
+		school:school
 	});
 	
 	newUser.save(function(err){
