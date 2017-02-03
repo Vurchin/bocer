@@ -15,7 +15,7 @@ var config = {
   "HOST"    : "localhost", 
   "PORT"    : "27017", 
   "DATABASE" : "bocer"
-}
+};
 var dbpath = "mongodb://"
               + config.HOST
               + ":"
@@ -53,6 +53,14 @@ app.use('/', book);
 app.use('/',listing);
 app.use('/',school);
 app.use('/admin',admin);
+
+app.post('/get',function(req,res){
+    console.log(req.body);
+    out = {
+	'content':'good'
+    };
+    res.send(out);
+})
 
 
 

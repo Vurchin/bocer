@@ -574,6 +574,7 @@ var school_list = {
 	'rmcdotedu':'Randolph-Macon College',
 	'roanokedotedu':'Roanoke College',
 	'rochesterdotedu':'University of Rochester',
+	'udotrochesterdotedu':'University of Rochester',
 	'rockefellerdotedu':'The Rockefeller University',
 	'rockforddotedu':'Rockford University',
 	'rockhurstdotedu':'Rockhurst University',
@@ -921,21 +922,36 @@ var school_list = {
 	'yaledotedu':'Yale University',
 	'ycpdotedu':'York College of Pennsylvania',
 	'ysudotedu':'Youngstown State University',
-	'yudotedu':'Yeshiva University',
+	'yudotedu':'Yeshiva University'
+};
+
+String.prototype.replaceAll = function(search, replace)
+{
+    //if replace is not sent, return original string otherwise it will
+    //replace search string with 'undefined'.
+    if (replace === undefined) {
+        return this.toString();
+    }
+
+    return this.replace(new RegExp('[' + search + ']', 'g'), replace);
 };
 
 router.post('/searchSchoolname',function(req,res){
-	var domain = req.body.domain;
+	var email = req.body.domain;
+	var tail = email.split('@');
+	var domain = tail[1];
+	domain_name = domain.replaceAll('.','dot');
+	console.log(domain_name)
 	var out = {
 		'Target Action':'searchSchoolnameresult',
 		'content':''
 	};
-	if(!school_list[domain]){
+	if(!school_list[domain_name]){
 		out.content = 'fail';
 		res.send(out);
 	}
 	else{
-		out.content = school_list[domain];
+		out.content = school_list[domain_name];
 		res.send(out);
 	}
 });

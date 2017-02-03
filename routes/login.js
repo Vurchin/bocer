@@ -63,24 +63,77 @@ router.post('/addUser', function(req, res){
 router.post('/login', function(req, res){
 	var username = req.body.username;
 	var password = req.body.password;
+	// var device_token = req.body.device_token;
 	var out = {
 		'Target Action':'loginresult',
 		'content':''
 		};
 	User.findOne({username:username},function(err,user){
-		if(err)
-			out.content='fail';
+		if(err){
+			out.content = 'fail';
+			res.send(out);
+		}
 		else if(!user){
-			out.content='wrong';
-		}else{
+			out.content = 'fail';
+			res.send(out);
+		}
+		else{
 			user.comparePwd(password,function(isMatch){
-				if(isMatch) {out.content='success';}
-				else{out.content='wrong';}
+				if(isMatch){
+					// user.device_token.push(device_token);
+					// User.update({username:username},{$set:{device_token:user.device_token}},function(err){
+					// 	if(err){
+					// 		out.content = 'fail';
+					// 		res.send(out);
+					// 	}
+					// 	else{
+					// 		out.content = 'success';
+					// 		res.send(out);
+					// 	}
+					// });
+					out.content = 'success';
+					res.send(out);
+				}
+				else{
+					out.content = 'wrong';
+					res.send(out);
+				}
 			});
 		}
-		res.send(out);
-	})
+	});
 });
+
+//should do something about the device token
+router.post('/logout',function(req,res){
+	var username = req.body.username;
+	var device_token = req.body.device_token;
+	var out = {
+		'Target Action':'logoutresult',
+		'content':''
+	};
+	User.findOne({username:username,device_token:device_token},function(err,user){
+		if(err){
+			out.content = 'fail',
+			res.send(out);
+		}
+		else if(!user){
+			//nothing to do here
+		}
+		else{
+			user.device_token.remove(device_token);
+			User.update({username:username},{$set:{device_token:user.device_token}},function(err){
+				if(err){
+					out.content = 'fail';
+				}
+				else{
+					out.content = 'success';
+					res.send(out);
+				}
+			});
+		}
+	});
+});
+
 
 router.post('/checkFacebook', function(req,res){
 	var username = req.body.username;

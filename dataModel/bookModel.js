@@ -6,10 +6,9 @@ var crypto = require('crypto');
 var bookSchema = new Schema({
 	user_id:{type:Schema.ObjectId,ref:'User'},
 	title:{type:String, require:true},
-	ISBN:{type:String, require:true},
 	author:{type:String, require:true},
 	edition:{type:String},
-	image:[String],
+	image:[String], //may just contain 3 images
 	className:{type:String},
 	price:{type:Number, require:true},
 	real_price:{type:Number, require:true},
