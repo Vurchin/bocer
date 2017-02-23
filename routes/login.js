@@ -155,7 +155,8 @@ router.post('/checkFacebook', function(req,res){
 });
 
 router.post('/forgetPassword', function(req,res){
-	var username = req.body.username;
+    console.log('here');
+    var username = req.body.username;
 	var out = {
 		'Target Action':'forgetresult',
 		'content':''
