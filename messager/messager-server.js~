@@ -1,0 +1,9 @@
+//The server for bocer app
+//Using Framework Socket.IO
+
+var host = 'http://localhost:8000/';
+
+var io = require('socket.io')(server);
+
+
+
