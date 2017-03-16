@@ -92,9 +92,6 @@ io.sockets.on('connection', function(socket) {
     //push message to socket
     
     
-    
-    
-    socket.emit('message',out);
     //end test
     socket.on('disconnect', function() {
 	var idx = socket_map[username].indexOf(socketid);
@@ -103,6 +100,7 @@ io.sockets.on('connection', function(socket) {
 });
 
 app.post('/message',function(req,res){
+    console.log("here")
     var from = req.body.from;
     var to = req.body.to;
     var message = req.body.message;
@@ -173,7 +171,7 @@ app.listen((process.env.PORT || 3000),function(err){
     console.log(err);
   }
   else{
-    console.log('server running at ' + (process.env.PORT || 3000));
+    console.log('server running at 3000');
   }
 });
 

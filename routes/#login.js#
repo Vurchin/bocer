@@ -1,0 +1,244 @@
+'var express = require('express');
+var crypto = require('crypto');
+var router = express.Router();
+var User = require('../dataModel/userModel');
+var Profile = require('../dataModel/profileModel');
+var nodemailer = require('nodemailer');
+crypto.DEFAULT_ENCODING = 'binary';
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'bocer@bocerbook.com',
+        pass: '1Qaz2wsx'
+    }
+});
+
+router.post('/addUser', function(req, res){
+	console.log('message got');
+	var username = req.body.username;
+	var password = req.body.password;
+	var school = req.body.school;
+	var firstName = req.body.firstName;
+	var lastName = req.body.lastName;
+	var currentTime = new Date();
+
+	var newUser = User({
+		username:username,
+		password:password,
+		firstName:firstName,
+		lastName:lastName,
+		createDate:currentTime
+	});
+
+	var newProfile = Profile({
+		user_id: newUser._id,
+		username:username,
+		firstName:firstName,
+		lastName:lastName,
+		school:school
+	});
+	
+	newUser.save(function(err){
+		var out = {
+		'Target Action':'signupresult',
+		'content':''};
+		if(err){
+			if(err.code===11000){
+				out.content='exist';
+			}else{
+				out.content='fail';
+			}
+		}
+		else{
+			out.content='success';
+			newProfile.save(function(err){
+				if(err) out.content = 'fail';
+			});
+		}
+		res.send(out);
+	});
+});
+
+router.post('/login', function(req, res){
+	var username = req.body.username;
+	var password = req.body.password;
+	// var device_token = req.body.device_token;
+	var out = {
+		'Target Action':'loginresult',
+		'content':''
+		};
+	User.findOne({username:username},function(err,user){
+		if(err){
+			out.content = 'fail';
+			res.send(out);
+		}
+		else if(!user){
+			out.content = 'fail';
+			res.send(out);
+		}
+		else{
+			user.comparePwd(password,function(isMatch){
+				if(isMatch){
+					// user.device_token.push(device_token);
+					// User.update({username:username},{$set:{device_token:user.device_token}},function(err){
+					// 	if(err){
+					// 		out.content = 'fail';
+					// 		res.send(out);
+					// 	}
+					// 	else{
+					// 		out.content = 'success';
+					// 		res.send(out);
+					// 	}
+					// });
+					out.content = 'success';
+					res.send(out);
+				}
+				else{
+					out.content = 'wrong';
+					res.send(out);
+				}
+			});
+		}
+	});
+});
+
+//should do something about the device token
+router.post('/logout',function(req,res){
+	var username = req.body.username;
+	var device_token = req.body.device_token;
+	var out = {
+		'Target Action':'logoutresult',
+		'content':''
+	};
+	User.findOne({username:username,device_token:device_token},function(err,user){
+		if(err){
+			out.content = 'fail',
+			res.send(out);
+		}
+		else if(!user){
+			//nothing to do here
+		}
+		else{
+			user.device_token.remove(device_token);
+			User.update({username:username},{$set:{device_token:user.device_token}},function(err){
+				if(err){
+					out.content = 'fail';
+				}
+				else{
+					out.content = 'success';
+					res.send(out);
+				}
+			});
+		}
+	});
+});
+
+
+router.post('/checkFacebook', function(req,res){
+	var username = req.body.username;
+
+	var out = {
+		'Target Action':'facebookresult',
+		'content':''
+	};
+	User.findOne({username:username},function(err,user){
+		if(err){
+			out.content = 'fail';
+		}else if(!user){
+			out.content = 'not exist';
+		}else{
+			out.content='success';
+		}
+		res.send(out);
+	});
+});
+
+router.post('/forgetPassword', function(req,res){
+    console.log('here');
+    var username = req.body.username;
+	var out = {
+		'Target Action':'forgetresult',
+		'content':''
+	}
+	User.findOne({username:username},function(err,user){
+		if(err){
+			out.content = 'fail';
+			res.send(out);
+		}else if(!user){
+			out.content = 'not exist';
+			res.send(out);
+		}else{
+			var token = crypto.randomBytes(6).toString('hex');
+			var tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate()+1);
+
+			user.resetPwdToken = token;
+			user.resetPwdExpire = tomorrow;
+
+			user.save(function(err){
+				if(err) {out.content='fail';res.send(out);}
+				else{
+					transporter.sendMail({
+						from: 'bocer@bocerbook.com',
+	    				to: user.username,
+	    				subject: 'Reset Password for Bocer',
+	    				text: 'Your verification code is ' + token + '. This code will expire in 24 hours.'
+						}, function(err,info){
+						if(err) out.content='fail';
+						else{
+							out.content='success';	
+						}
+						res.send(out);
+					});
+				}
+			});
+		}
+	})
+});
+//in case if there will be a website
+router.get('/reset/:token',function(req,res){
+	var token = req.params.token;
+	var now = new Date();
+	User.findOne({resetPwdToken:token, resetPwdExpire:{$gt:now}},function(err,user){
+		if(err){res.render('reset', {result:'fail'});}
+		else if(!user){
+			res.render('reset',{result:'error'});
+		}else{
+			res.render('reset',{result:'found'});
+		}
+	});
+});
+router.post('/reset',function(req,res){
+	var token = req.body.token;
+	var username = req.body.username;
+	var out = {
+		'Target Action':'reset',
+		'content':''
+	}
+	User.findOne({username:username, resetPwdToken:token, resetPwdExpire:{$gt:Date.now()}},function(err,user){
+		if(err){
+			out.content = 'fail';
+			res.send(out);
+		}
+		else if(!user){
+			out.content = 'error';
+			res.send(out);
+		}else{
+			var password = req.body.password;
+			user.password = crypto.createHash('md5').update(password).digest('hex');
+			user.resetPwdToken = undefined;
+			user.resetPwdExpire = undefined;
+			user.save(function(err){
+				if(err){
+					out.content = 'fail';
+					res.send(out);
+				}else{
+					out.content = 'success';
+					res.send(out);
+				}
+			});
+		}
+	});
+});
+module.exports = router;
